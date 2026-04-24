@@ -45,7 +45,7 @@ const state = {
     devAdmin: false
   },
   profileDraft: createEmptyProfileDraft(),
-  adminProjectDraft: createEmptyProjectDraft(),
+  adminProjectDraft: createEmptyProjectDraft(0),
   adminSettingsDraft: {
     brandName: "Orbit Hub",
     supportText: "Premium Telegram Mini App",
@@ -129,7 +129,7 @@ document.addEventListener("click", async (event) => {
 
   const newProjectButton = event.target.closest("[data-new-project]");
   if (newProjectButton) {
-    state.adminProjectDraft = createEmptyProjectDraft();
+    state.adminProjectDraft = createEmptyProjectDraft(state.projects.length);
     render();
     return;
   }
@@ -425,7 +425,7 @@ function createEmptyProfileDraft() {
   };
 }
 
-function createEmptyProjectDraft() {
+function createEmptyProjectDraft(projectCount = 0) {
   return {
     slug: "",
     title: "",
@@ -441,7 +441,7 @@ function createEmptyProjectDraft() {
     imageUrl: "",
     ctaLink: "",
     isVisible: true,
-    sortOrder: state.projects.length,
+    sortOrder: projectCount,
     status: "building"
   };
 }
@@ -558,7 +558,7 @@ async function saveProject() {
       }
     });
     await refreshProjectsAndAdmin();
-    state.adminProjectDraft = createEmptyProjectDraft();
+    state.adminProjectDraft = createEmptyProjectDraft(state.projects.length);
     showToast("Kategoriya saqlandi.");
   } catch (error) {
     showToast(error.message || "Kategoriya saqlanmadi.");
@@ -576,7 +576,7 @@ async function deleteProject(slug) {
     });
     await refreshProjectsAndAdmin();
     if (state.adminProjectDraft.slug === slug) {
-      state.adminProjectDraft = createEmptyProjectDraft();
+      state.adminProjectDraft = createEmptyProjectDraft(state.projects.length);
     }
     showToast("Kategoriya o'chirildi.");
   } catch (error) {
