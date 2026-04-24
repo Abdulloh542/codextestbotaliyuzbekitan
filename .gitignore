@@ -1,0 +1,4 @@
+.env
+data/app-data.json
+server-out.log
+server-err.log
