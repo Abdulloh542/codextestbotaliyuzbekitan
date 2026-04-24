@@ -301,6 +301,27 @@ function initTelegramSession() {
   const query = new URLSearchParams(window.location.search);
   state.session.hasTelegram = Boolean(tg?.initDataUnsafe?.user);
   state.session.devAdmin = query.get("admin") === "1";
+  const fallbackUser = {
+    telegramId: Number(query.get("devUser") || (state.session.devAdmin ? 5980483689 : 2026001)),
+    username: query.get("username") || "demo_user",
+    firstName: query.get("name") || "Demo",
+    lastName: query.get("lastName") || "User",
+    displayName: `${query.get("name") || "Demo"} ${query.get("lastName") || "User"}`.trim(),
+    photoUrl: "",
+    role: state.session.devAdmin ? "admin" : "user",
+    profile: {
+      about: "",
+      customAvatar: "",
+      contactPhone: "",
+      location: ""
+    },
+    preferences: {
+      theme: "light",
+      language: "uz"
+    },
+    languageCode: "uz",
+    isPremium: false
+  };
 
   if (tg) {
     tg.ready?.();
@@ -308,29 +329,9 @@ function initTelegramSession() {
     tg.setHeaderColor?.("#f4efe3");
     tg.setBackgroundColor?.("#f4efe3");
     state.session.initData = tg.initData || "";
-    state.session.user = mapTelegramUser(tg.initDataUnsafe.user);
+    state.session.user = state.session.hasTelegram ? mapTelegramUser(tg.initDataUnsafe.user) : fallbackUser;
   } else {
-    state.session.user = {
-      telegramId: Number(query.get("devUser") || (state.session.devAdmin ? 5980483689 : 2026001)),
-      username: query.get("username") || "demo_user",
-      firstName: query.get("name") || "Demo",
-      lastName: query.get("lastName") || "User",
-      displayName: `${query.get("name") || "Demo"} ${query.get("lastName") || "User"}`.trim(),
-      photoUrl: "",
-      role: state.session.devAdmin ? "admin" : "user",
-      profile: {
-        about: "",
-        customAvatar: "",
-        contactPhone: "",
-        location: ""
-      },
-      preferences: {
-        theme: "light",
-        language: "uz"
-      },
-      languageCode: "uz",
-      isPremium: false
-    };
+    state.session.user = fallbackUser;
   }
 }
 
